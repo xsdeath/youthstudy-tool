@@ -176,26 +176,22 @@ if __name__ == '__main__':#防止import的时候被执行
 
 
             #学习频道
-            channellist=['1457968754882572290','1442413897095962625','1442413983955804162']#分别为 广东共青团原创专区、我们爱学习、团务小百科
+            getchannelList = requests.get('https://youthstudy.12355.net/saomah5/api/channel/tier/one/list', headers=headers)
+            channelList = json.loads(getchannelList.text).get('data').get('list')#主动获取学习频道栏目
             print('\n=====学习频道=====')
             if config['study']['studychannel'] == 'yes':
-                channel_output=''
-                for channelId in channellist:
-                    if channelId == '1457968754882572290':
-                        print('广东共青团原创专区:',end='')
-                        channelNow='<b>广东共青团原创专区:</b>'
-                    elif channelId == '1442413897095962625':
-                        print('我们爱学习:',end='')
-                        channelNow='<b>我们爱学习:</b>'
-                    else:
-                        print('团务小百科:',end='')
-                        channelNow='<b>团务小百科:</b>'
+                channel_output=''            
+                for i in channelList:
+                    id = i['id']
+                    channelName = i['channelName']
+                    print(channelName,end='：')
+                    channelNow='<b>'+channelName+'</b>'
+                    params = {
+                        'channelId': id,
+                        'pageSize': '999',#提高pageSize以获得全部元素
+                        'time': t(),
+                    }
                     if islimited(xLitemallToken) == False:
-                        params = {
-                            'channelId': channelId,
-                            'pageSize': '300',#提高pageSize以获得全部元素
-                            'time': t(),
-                        }
                         getarticle = requests.get('https://youthstudy.12355.net/saomah5/api/article/get/channel/article', params=params, headers=headers)
                         articleslist = json.loads(getarticle.text).get('data').get('entity').get('articlesList')
                         addScore_output=''
