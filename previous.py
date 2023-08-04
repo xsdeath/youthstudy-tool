@@ -12,17 +12,14 @@ for member in memberlist:
     try:
         print("=====往期课程打卡=====")
         headers['X-Litemall-Token']=ConverMidToXLToken(member)
-        getChapterList = requests.get('https://youthstudy.12355.net/saomah5/api/young/course/list', headers=headers)
-        chapterList=json.loads(getChapterList.text).get("data").get("list")
+        chapterList=json.loads(requests.get('https://youthstudy.12355.net/saomah5/api/young/course/list', headers=headers).text).get("data").get("list")
         saveOldHistory_output=''
         for chapter in chapterList:
             #获取期
-            #print(chapter['id'])
             params = {
                 'pid': chapter['id'],
             }
-            getChapterDetail = requests.get('https://youthstudy.12355.net/saomah5/api/young/course/chapter/list', params=params, headers=headers)
-            chapterDetail=json.loads(getChapterDetail.text).get('data').get('list')
+            chapterDetail=json.loads(requests.get('https://youthstudy.12355.net/saomah5/api/young/course/chapter/list', params=params, headers=headers).text).get('data').get('list')
             for chapterId in chapterDetail:
                 data = {
                     'chapterId': chapterId['id'],

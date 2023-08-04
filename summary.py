@@ -22,12 +22,15 @@ StudyName=LatestStudy['data']['entity']['name']
 Finishpage='<a href="'+'https://finishpage.dgstu.tk/?id='+StudyId+'&name='+StudyName+'">（伪）当前期完成页</a><br>'
 pushdata['content']=Finishpage
 
+#隐私信息防剧透隐藏css
+pushdata['content']+='<style>.spoiler{color:#000;background-color:#000}.spoiler:hover{color:#000;background-color:#fff}</style>'
+
 time.sleep(60)#平台统计有延迟
 errorcount=0
 for member in origin:
     if member['status']== 'error':
         errorcount+=1
-        pushdata['content']+='<b>mid或X-Litemall-Token:</b>'+member['member']+'<br><b>状态:</b>'+'执行出错'+'<br>'
+        pushdata['content']+='<b>mid或X-Litemall-Token:</b><span class="spoiler" >'+member['member']+'</span>'+'<br><b>状态:</b>'+'执行出错'+'<br>'
         continue
     XLtoken=main.ConverMidToXLToken(member['member'])
     profile=main.GetProfile(XLtoken)
@@ -46,7 +49,7 @@ for member in origin:
     else:
         score_need=0
     member['result']+='<br>此次执行增加了<b>'+str(score_add)+'</b>积分'+'<br>当前为<b>'+profile.medal()+'</b>，距离下一徽章还需<b>'+str(score_need)+'</b>积分<br>'
-    pushdata['content']+='<b>mid或X-Litemall-Token:</b>'+member['member']+'<br><b>名称:</b>'+member['name']+'<br>'+member['result']+'<br>'
+    pushdata['content']+='<b>mid或X-Litemall-Token:</b><span class="spoiler" >'+member['member']+'</span>'+'<br><b>名称:</b>'+member['name']+'<br>'+member['result']+'<br>'
 
 #检查token
 if ('token' in locals().keys()) == True:

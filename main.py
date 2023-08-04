@@ -176,8 +176,7 @@ if __name__ == '__main__':#防止import的时候被执行
 
 
             #学习频道
-            getchannelList = requests.get('https://youthstudy.12355.net/saomah5/api/channel/tier/one/list', headers=headers)
-            channelList = json.loads(getchannelList.text).get('data').get('list')#主动获取学习频道栏目
+            channelList = json.loads(requests.get('https://youthstudy.12355.net/saomah5/api/channel/tier/one/list', headers=headers).text).get('data').get('list')#主动获取学习频道栏目
             print('\n=====学习频道=====')
             if config['study']['studychannel'] == 'yes':
                 channel_output=''            
@@ -185,7 +184,7 @@ if __name__ == '__main__':#防止import的时候被执行
                     id = i['id']
                     channelName = i['channelName']
                     print(channelName,end='：')
-                    channelNow='<b>'+channelName+'</b>'
+                    channelNow='<b>'+channelName+':</b>'
                     params = {
                         'channelId': id,
                         'pageSize': '999',#提高pageSize以获得全部元素
@@ -219,12 +218,11 @@ if __name__ == '__main__':#防止import的时候被执行
                 channel_output='跳过执行'
                 print(channel_output)
             #我要答题
-            print('我要答题:',end='')
+            print('我要答题：',end='')
             if config['study']['answer_questions']=='yes':
                 if islimited(xLitemallToken) == False:
                     #获得题目
-                    getList = requests.get('https://youthstudy.12355.net/saomah5/api/question/list', headers=headers)#获取题目列表
-                    testList=json.loads(getList.text).get('data').get('list')
+                    testList=json.loads(requests.get('https://youthstudy.12355.net/saomah5/api/question/list', headers=headers).text).get('data').get('list')#获取题目列表
                     submit_output=''
                     for test in testList:
                         params = {
