@@ -30,10 +30,10 @@ for member in memberlist:
         print('\n')
         for result in origin:
             if result['member'] == member:
-                result['result']+='<br><b>往期课程打卡：</b>'+saveOldHistory_output
+                result['result']['往期课程打卡']=saveOldHistory_output
     except:
         for result in origin:
             if result['member'] == member:
-                result['result']+='<br><b>往期课程打卡：</b>失败'
+                result['result']['往期课程打卡']='失败'
     with open('result.json','w+',encoding='utf8') as new_file:
         new_file.write(json.dumps(origin))

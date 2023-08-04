@@ -124,7 +124,7 @@ def islimited(XLToken):
     return(json.loads(requests.get('https://youthstudy.12355.net/saomah5/api/young/score/status',headers=headers).text)['data']['entity']['scoreStatus'])
 
 output_list=[]
-if __name__ == '__main__':#防止import的时候被执行
+if __name__ == '__main__':
     count=0
     statusOutput=''#存储执行状态的字符串
     for member in memberlist:
@@ -178,13 +178,14 @@ if __name__ == '__main__':#防止import的时候被执行
             #学习频道
             channelList = json.loads(requests.get('https://youthstudy.12355.net/saomah5/api/channel/tier/one/list', headers=headers).text).get('data').get('list')#主动获取学习频道栏目
             print('\n=====学习频道=====')
+            channel_output={}
             if config['study']['studychannel'] == 'yes':
-                channel_output=''            
                 for i in channelList:
                     id = i['id']
                     channelName = i['channelName']
                     print(channelName,end='：')
-                    channelNow='<b>'+channelName+':</b>'
+                    # channelNow='<b>'+channelName+':</b>'
+                    
                     params = {
                         'channelId': id,
                         'pageSize': '999',#提高pageSize以获得全部元素
@@ -202,18 +203,20 @@ if __name__ == '__main__':#防止import的时候被执行
                                 }
                                 addScore = requests.get('https://youthstudy.12355.net/saomah5/api/article/addScore', params=params, headers=headers)
                                 print(json.loads(addScore.text).get('msg'),end='')
-                                addScore_output=addScore_output+json.loads(addScore.text).get('msg')
+                                addScore_output+=json.loads(addScore.text).get('msg')
                                 availableArticles+=1
                         if availableArticles==0:
                             print('无可供学习内容')
-                            addScore_output=addScore_output+'无可供学习内容'
+                            addScore_output+='无可供学习内容'
                         else:
                             print('')
                     else:
                         print('达到每日积分限制，跳过执行')
                         addScore_output='达到每日积分限制，跳过执行'
-                    channel_output+=channelNow+addScore_output+'<br>'
-                channel_output=channel_output.rstrip('<br>')
+                    # channel_output+=channelNow+addScore_output
+                    channel_output[channelName]=addScore_output
+
+                # channel_output=channel_output.rstrip('<br>')
             else:
                 channel_output='跳过执行'
                 print(channel_output)
@@ -263,7 +266,12 @@ if __name__ == '__main__':#防止import的时候被执行
                 output['status']='passed'
             else:
                 output['status']=name+'签到'+json.loads(saveHistory.text).get('msg')
-            output['result']='<b>更新日期:</b>'+updateDate+'<br><b>名称:</b>'+name+'<br><b>打卡状态:</b>'+StudyStatus+'<br><b>=====学习频道=====</b><br>'+channel_output+'<br><b>我要答题:</b>'+submit_output
+            # output['result']='<b>更新日期:</b>'+updateDate+'<br><b>名称:</b>'+name+'<br><b>打卡状态:</b>'+StudyStatus+'<br><b>=====学习频道=====</b><br>'+channel_output+'<br><b>我要答题:</b>'+submit_output
+            output['result']={'更新日期':updateDate,
+                              '名称':name,
+                              '打卡状态':StudyStatus,
+                              '学习频道':channel_output,
+                              '我要答题':submit_output}
             output['score']=score
             output_list.append(output)
         except:
