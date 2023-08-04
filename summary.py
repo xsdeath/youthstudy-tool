@@ -85,10 +85,10 @@ htmlcontent='<style>.spoiler{color:#000;background-color:#000}.spoiler:hover{col
 htmlcontent+=f'<a href="{FinishpageUrl}">（伪）当前期完成页</a><br>'
 for mem in origin:
     if mem['status']=='error':
-        htmlcontent+=f"<b>mid或X-Litemall-Token:</b>{mem['member']}<br><b>出现错误啦</b><br><br>"
+        htmlcontent+=f'''<b>mid或X-Litemall-Token:</b><span class="spoiler" >{mem['member']}</span><br><b>出现错误啦</b><br><br>'''
     else:
         htmlcontent+=f'''
-        <b>mid或X-Litemall-Token:</b>{mem['member']}
+        <b>mid或X-Litemall-Token:</b><span class="spoiler" >{mem['member']}</span>
         <b>名称:</b>{mem['name']}
         <b>更新日期:</b>{mem['result']['更新日期']}
         <b>名称:</b>{mem['result']['名称']}
