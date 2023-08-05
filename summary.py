@@ -1,39 +1,28 @@
 import requests,json,main,time,os,re
+from urllib import parse
+from push import pushplus,email
+
 with open('result.json','r',encoding='utf8') as origin_file:
     origin=origin_file.read()
 origin=json.loads(origin)
 config=main.config
 
-def pushplus(title,htmlcontent):
-    pushplsdata={}
-    pushplsdata['channel']=config['pushplus']['channel']
-    pushplsdata['template']='html'
-    pushplsdata['title']=title
-    pushplsdata['content']=htmlcontent
-    token=config['pushplus']['token']
-    if token == '':
-        try:
-            token=os.environ['PUSHTOKEN']
-        except:
-            pass
-    #向pushplus发出推送请求
-    # try:
-    if config['push']['push']=='yes':
-        pushplsdata['token']=token
-        push=json.loads(requests.post('http://www.pushplus.plus/send/',data=pushplsdata).text)
-        if push['msg'] == '请求成功':
-            print('推送成功')
-        else:
-            exit('推送失败：'+push['msg'])
-    # except:
-    #     pass
-
+def tokenhandler(method,tokenList):
+    for Neededtoken in tokenList:
+        if config[method][Neededtoken] == '':
+            try:
+                if method == 'pushplus':# 保持对旧版的兼容
+                    config[method][Neededtoken]=os.environ['PUSHTOKEN']
+                else:
+                    config[method][Neededtoken]=os.environ[f"{method}_{Neededtoken}"]
+            except:
+                pass
 
 #当前期完成页
 LatestStudy=json.loads(requests.get('https://youthstudy.12355.net/saomah5/api/young/chapter/new',headers=main.headers).text)
 StudyId=re.search('[a-z0-9]{10}',LatestStudy['data']['entity']['url']).group(0)
 StudyName=LatestStudy['data']['entity']['name']
-FinishpageUrl='https://finishpage.dgstu.tk/?id='+StudyId+'&name='+StudyName
+FinishpageUrl='https://finishpage.dgstu.tk/?id='+StudyId+'&name='+parse.quote(StudyName)
 
 time.sleep(60)#平台统计有延迟
 errorcount=0
@@ -108,12 +97,41 @@ for mem in origin:
         当前为<b>{mem['result']['sam']['medal']}</b>，距离下一徽章还需<b>{mem['result']['sam']['needed']}</b>积分<br>
         '''
 
-
 # 纯文本推送内容
-textcontent=f'（伪）当前期完成页：{FinishpageUrl}\n'
+textcontent=f'（伪）当前期完成页：{FinishpageUrl}\n\n'
+for mem in origin:
+    if mem['status']=='error':
+        textcontent+=f'''mid或X-Litemall-Token:{mem['member']}\n出现错误啦\n\n'''
+    else:
+        textcontent+=f'''mid或X-Litemall-Token:{mem['member']}
+        名称:{mem['name']}
+        更新日期:{mem['result']['更新日期']}
+        名称:{mem['result']['名称']}
+        打卡状态:{mem['result']['打卡状态']}
+    '''
+        if '往期课程打卡' in mem['result'].keys():
+            textcontent+=f"往期课程打卡:{mem['result']['往期课程打卡']}\n"
+        textcontent+='=====学习频道=====\n'
+        if mem['result']['学习频道'] != '跳过执行':
+            for channel in mem['result']['学习频道'].keys():
+                textcontent+=f"{channel}:{mem['result']['学习频道'][channel]}\n"
+        else:
+            textcontent+='跳过执行\n'
+        textcontent+=f"我要答题:{mem['result']['我要答题']}"
+        textcontent+=f'''
+        此次执行增加了{mem['result']['sam']['added']}积分
+        当前为{mem['result']['sam']['medal']}，距离下一徽章还需{mem['result']['sam']['needed']}积分\n
+        '''
 
+
+# 推送
 if config['push']['method']=='pushplus':
-    pushplus(title,htmlcontent)
+    tokenhandler('pushplus',['token'])
+    pushplus.push(title,htmlcontent,config['pushplus'])
+elif config['push']['method']=='email':
+    tokenhandler('email',['host','port','sender','password'])
+    email.push(title,htmlcontent,config['email'])
+
 #Actions Summary
 try:
     print('正在生成运行结果')
