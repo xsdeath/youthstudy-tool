@@ -22,7 +22,7 @@
 1. Fork本仓库（更加建议使用[import](https://github.com/new/import)导入本仓库）
 2. 在仓库的Settings-Secrets-Actions中分别添加以下两个Secrets并按实际情况填写
     - PUSHTOKEN（pushplus的token，**如不需要推送请将`config.ini`中的`push = yes`字段改为`push = no`**）
-    - mid 【兼容X-Litemall-Token（可混用），多个请以|隔开】（智慧团建-认证资料-生成电子团员证，点击最下方生成按钮。在团员证页面复制链接 应为：`https://tuan.12355.net/wechat/view/information/member_certification_generated.html?memberId=`**xxxxxx**`&showMemberAdditionNames=&showMemberRewardIds=&isShowAllFee=true` 其中xxxxxx即为mid，X-Litemall-Token需抓包获取，不推荐使用）
+    - mid 【兼容X-Litemall-Token（可混用），多个请以|隔开】（智慧团建-认证资料-生成电子团员证，点击最下方生成按钮。上传照片页面复制链接 应为：`https://tuan.12355.net/wechat/view/information/member_certification_photo.html?mid=XXXXXXX` 其中XXXXXXX即为mid，X-Litemall-Token需抓包获取，不推荐使用）
       - 举个栗子
         - `8888888|dfajkhdfkjalsdhfalkd.akdjfhalksjdhfalksdfh|1234567`（共三人，二者混用）
         - `1234567|7654321`（共两人，仅使用mid）
