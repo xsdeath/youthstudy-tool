@@ -1,6 +1,6 @@
 import requests,json,main,time,os,re
 from urllib import parse
-from push import pushplus,email
+from push import pushplus,email,serverChan
 
 with open('result.json','r',encoding='utf8') as origin_file:
     origin=origin_file.read()
@@ -24,7 +24,7 @@ StudyId=re.search('[a-z0-9]{10}',LatestStudy['data']['entity']['url']).group(0)
 StudyName=LatestStudy['data']['entity']['name']
 FinishpageUrl='https://finishpage.dgstu.tk/?id='+StudyId+'&name='+parse.quote(StudyName)
 
-time.sleep(60)#平台统计有延迟
+# time.sleep(60)#平台统计有延迟
 errorcount=0
 for member in origin:
     if member['status']== 'error':
@@ -57,7 +57,7 @@ for member in origin:
 if errorcount!=len(main.memberlist):
     titledone=False
     for i in origin:
-        if (i['status']!='error') and (i['status']!='passed'):
+        if (i['status']!='error') and (i['status']!='passed') and (i['result']['打卡状态']!='本期已过学习时间，下一期请及时学习'):
             if titledone==False:
                 title='['+str(len(main.memberlist)-errorcount)+'/'+str(len(main.memberlist))+']'+i['status']+'啦'
                 titledone=True#若有打卡成功的则锁定标题
@@ -132,6 +132,12 @@ if config['push']['push']=='yes':
     elif config['push']['method']=='email':
         tokenhandler('email',['host','port','sender','password'])
         email.push(title,htmlcontent,config['email'])
+    elif config['push']['method']=='telegram':
+        tokenhandler('telegram',['botToken','userId'])
+        serverChan.push(title,textcontent,config['telegram'])
+    elif config['push']['method']=='severChan':
+        tokenhandler('severChan',['key'])
+        serverChan.push(title,textcontent,config['severChan'])
 
 #Actions Summary
 try:
@@ -141,7 +147,7 @@ try:
     for i in origin:
         count+=1
         summary+='\n|'+str(count)+'|'
-        if i['status'] != 'error':
+        if (i['status'] != 'error') and i['result']['打卡状态']!='本期已过学习时间，下一期请及时学习':
             summary+='✅|'
         else:
             summary+='❌|'
