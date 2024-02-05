@@ -30,9 +30,13 @@ for member in origin:
     if member['status']== 'error':
         errorcount+=1
         continue
-    XLtoken=main.ConverMidToXLToken(member['member'])
-    profile=main.GetProfile(XLtoken)
-    score_now=profile.score()
+    XLtoken=member['XLtoken']
+    try:
+        profile=main.GetProfile(XLtoken)
+        score_now=profile.score()
+    except:
+        profile=main.GetProfile(main.ConverMidToXLToken(member['member']))
+        score_now=profile.score()
     score_add=score_now-member['score']
     if score_now < 100:
         score_need=100-score_now
@@ -52,6 +56,7 @@ for member in origin:
         'medal':profile.medal(),
         'needed':str(score_need)
     }
+    time.sleep(0.2)
 
 
 if errorcount!=len(main.memberlist):

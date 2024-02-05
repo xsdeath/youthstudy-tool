@@ -261,6 +261,7 @@ if __name__ == '__main__':
             statusOutput=statusOutput+str(count)+'\t'+StudyStatus+'\n'
             output={}
             output['member']=member
+            output['XLtoken']=xLitemallToken
             output['name']=profile.name()
             if IsStudied==True or config['study']['youthstudy']!='yes':
                 output['status']='passed'
