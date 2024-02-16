@@ -24,7 +24,7 @@ StudyId=re.search('[a-z0-9]{10}',LatestStudy['data']['entity']['url']).group(0)
 StudyName=LatestStudy['data']['entity']['name']
 FinishpageUrl='https://finishpage.dgstu.tk/?id='+StudyId+'&name='+parse.quote(StudyName)
 
-time.sleep(30)#平台统计有延迟
+# time.sleep(30)#平台统计有延迟
 errorcount=0
 for member in origin:
     if member['status']== 'error':
@@ -58,7 +58,8 @@ for member in origin:
             'needed':str(score_need)
         }
         time.sleep(0.2)
-    except:
+    except Exception as e:
+        print('出现错误了：'+e)
         member['result']['sam']={
             'added':'Null',
             'medal':'Null',
