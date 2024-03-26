@@ -112,7 +112,7 @@ def ConverMidToXLToken(raw):
     else:
         try:
             payload='sign='+urllib.parse.quote((json.loads(requests.get('https://tuanapi.12355.net/questionnaire/getYouthLearningUrl?mid='+str(raw),headers=apiHeaders).text))['youthLearningUrl'].replace('https://youthstudy.12355.net/h5/#/?sign=',''))
-            rp=json.loads((requests.post('https://youthstudy.12355.net/apih5/api/user/get',headers=youthstudyHeaders,data=payload)).text)
+            rp=json.loads((requests.post('https://youthstudy.12355.net/saomah5/api/user/get',headers=youthstudyHeaders,data=payload)).text)
             return(rp['data']['entity']['token'])
         except Exception as e:
             raise Exception('mid转换失败')
